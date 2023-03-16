@@ -370,27 +370,28 @@ const handleMsgAck = (msg, ack) => __awaiter(void 0, void 0, void 0, function* (
         logger_1.logger.error(`Error handling message ack. Err: ${err}`);
     }
 });
-const wbotMessageListener = (wbot) => {
+const wbotMessageListener = (wbot) => __awaiter(void 0, void 0, void 0, function* () {
     /*wbot.on("message_create", async msg => {
       handleMessage(msg, wbot);
     });*/
     let pasosBot = [];
     let users = [];
+    const whatsapp = yield ShowWhatsAppService_1.default(wbot.id);
     wbot.on("message", (msg) => __awaiter(void 0, void 0, void 0, function* () {
         let bool = users.some(item => item === msg.from);
         if (msg.body.length > 0 && msg.body !== "1" && msg.body !== "2" && msg.body !== "3" && bool === false) {
             users.push(msg.from);
-            wbot.sendMessage(msg.from, "Hola Bienvenido a la empresaX, selecciona una opción: \n 1. Ventas \n 2. Soporte");
+            wbot.sendMessage(msg.from, `Hola Bienvenido a la empresa ${whatsapp.name}, selecciona una opción: \n 1. Ventas \n 2. Soporte`);
             return;
         }
         else if (msg.body === "1" && pasosBot.length === 0) {
             pasosBot.push("ventas");
-            wbot.sendMessage(msg.from, "Hola Bienvenido a Ventas seleciona una opcion: \n 1. Hogar \n 2. Movil \n 3. otro");
+            wbot.sendMessage(msg.from, "Hola Bienvenido a Ventas selecciona una opcion: \n 1. Hogar \n 2. Movil \n 3. otro");
             return;
         }
         else if (msg.body === "2" && pasosBot.length === 0) {
             pasosBot.push("soporte");
-            wbot.sendMessage(msg.from, "Hola Bienvenido Soporte seleciona una opcion: \n 1. Hogar \n 2. Movil \n 3. otro");
+            wbot.sendMessage(msg.from, "Hola Bienvenido Soporte selecciona una opcion: \n 1. Hogar \n 2. Movil \n 3. otro");
             return;
         }
         else if (msg.body === "1" && pasosBot[0] === "ventas") {
@@ -418,8 +419,6 @@ const wbotMessageListener = (wbot) => {
             wbot.sendMessage(msg.from, "Hola Bienvenido a Ventas area Otro, pronto un agente se comunicara contigo");
         }
         handleMessage(msg, wbot);
-        console.log(pasosBot);
-        console.log(users);
     }));
     wbot.on("media_uploaded", (msg) => __awaiter(void 0, void 0, void 0, function* () {
         handleMessage(msg, wbot);
@@ -427,5 +426,9 @@ const wbotMessageListener = (wbot) => {
     wbot.on("message_ack", (msg, ack) => __awaiter(void 0, void 0, void 0, function* () {
         handleMsgAck(msg, ack);
     }));
-};
+    setTimeout(() => {
+        users = [];
+        console.log('reseteando users');
+    }, 60 * 1000);
+});
 exports.wbotMessageListener = wbotMessageListener;
